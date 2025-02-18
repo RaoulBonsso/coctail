@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { incrementCartItem, decrementCartItem, removeFromCart } from '../redux/actions';
 
@@ -27,6 +27,7 @@ const CartScreen = ({ navigation }) => {
         keyExtractor={(item) => item.idDrink}
         renderItem={({ item }) => (
           <View style={styles.card}>
+            <Image source={{ uri: item.strDrinkThumb }} style={styles.image} />
             <Text style={styles.cocktailName}>{item.strDrink}</Text>
             <Text style={styles.quantity}>Quantité: {item.quantity}</Text>
             <View style={styles.buttonContainer}>
@@ -71,6 +72,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
   },
+  image: {
+    width: '100%',
+    height: 200,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
   cocktailName: {
     fontSize: 18,
     fontWeight: 'bold',
@@ -96,7 +103,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   removeButton: {
-    color: 'red',
+    backgroundColor: 'red',
+    padding: 10,
+    borderRadius: 5,
+    width: 80,
+    textAlign: 'center',
+    fontSize: 16,
+    color: 'white',
     marginLeft: 10,
     fontWeight: 'bold',
   },
