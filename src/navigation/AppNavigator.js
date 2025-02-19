@@ -43,6 +43,8 @@ const HomeStack = () => {
             backgroundColor: '#f4511e',
           },
           headerTintColor: '#fff',
+          headerBackTitle: ' ',
+          headerBackTitleVisible: false,
         }}
       />
       <Stack.Screen 
@@ -55,6 +57,8 @@ const HomeStack = () => {
             backgroundColor: '#f4511e',
           },
           headerTintColor: '#fff',
+          headerBackTitle: ' ',
+          headerBackTitleVisible: false,
         }}
       />
     </Stack.Navigator>
@@ -76,6 +80,8 @@ const FavoritesStack = () => {
             backgroundColor: '#f4511e',
           },
           headerTintColor: '#fff',
+          headerBackTitle: ' ',
+          headerBackTitleVisible: false,
         }}
       />
     </Stack.Navigator>
@@ -97,6 +103,8 @@ const SearchStack = () => {
             backgroundColor: '#f4511e',
           },
           headerTintColor: '#fff',
+          headerBackTitle: ' ',
+          headerBackTitleVisible: false,
         }}
       />
     </Stack.Navigator>
@@ -121,6 +129,8 @@ const CategoryStack = () => {
             backgroundColor: '#f4511e',
           },
           headerTintColor: '#fff',
+          headerBackTitle: ' ',
+          headerBackTitleVisible: false,
         })}
       />
       <Stack.Screen 
@@ -133,6 +143,8 @@ const CategoryStack = () => {
             backgroundColor: '#f4511e',
           },
           headerTintColor: '#fff',
+          headerBackTitle: ' ',
+          headerBackTitleVisible: false,
         }}
       />
     </Stack.Navigator>
