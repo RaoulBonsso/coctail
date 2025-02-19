@@ -38,7 +38,7 @@ const HomeStack = () => {
         component={CocktailDetail}
         options={{
           headerShown: true,
-          headerTitle: props => <Text style={styles.headerTitle}>Détails du Cocktail</Text>,
+          headerTitle: () => <Text style={styles.headerTitle}>Détails du Cocktail</Text>,
           headerStyle: {
             backgroundColor: '#f4511e',
           },
@@ -50,7 +50,7 @@ const HomeStack = () => {
         component={CocktailsByCategory}
         options={{
           headerShown: true,
-          headerTitle: props => <Text style={styles.headerTitle}>Cocktails par Catégorie</Text>,
+          headerTitle: () => <Text style={styles.headerTitle}>Cocktails par Catégorie</Text>,
           headerStyle: {
             backgroundColor: '#f4511e',
           },
@@ -71,7 +71,7 @@ const FavoritesStack = () => {
         component={CocktailDetail}
         options={{
           headerShown: true,
-          headerTitle: props => <Text style={styles.headerTitle}>Détails du Cocktail</Text>,
+          headerTitle: () => <Text style={styles.headerTitle}>Détails du Cocktail</Text>,
           headerStyle: {
             backgroundColor: '#f4511e',
           },
@@ -92,7 +92,7 @@ const SearchStack = () => {
         component={CocktailDetail}
         options={{
           headerShown: true,
-          headerTitle: props => <Text style={styles.headerTitle}>Détails du Cocktail</Text>,
+          headerTitle: () => <Text style={styles.headerTitle}>Détails du Cocktail</Text>,
           headerStyle: {
             backgroundColor: '#f4511e',
           },
@@ -116,7 +116,7 @@ const CategoryStack = () => {
         component={CocktailsByCategory}
         options={({ route }) => ({
           headerShown: true,
-          headerTitle: props => <Text style={styles.headerTitle}>{route.params.category}</Text>,
+          headerTitle: () => <Text style={styles.headerTitle}>{route.params.category}</Text>,
           headerStyle: {
             backgroundColor: '#f4511e',
           },
@@ -128,7 +128,7 @@ const CategoryStack = () => {
         component={CocktailDetail}
         options={{
           headerShown: true,
-          headerTitle: props => <Text style={styles.headerTitle}>Détails du Cocktail</Text>,
+          headerTitle: () => <Text style={styles.headerTitle}>Détails du Cocktail</Text>,
           headerStyle: {
             backgroundColor: '#f4511e',
           },
@@ -211,7 +211,7 @@ const AppNavigator = () => {
           name="MainTabs" 
           component={TabNavigator}
           options={{
-            headerTitle: props => <Text style={styles.headerTitle}>Nos Cocktails</Text>,
+            headerTitle: () => <Text style={styles.headerTitle}>Nos Cocktails</Text>,
             drawerLabel: ({ focused, color }) => (
               <DrawerLabel label="Nos Cocktails" emoji="🏠" />
             ),
@@ -221,7 +221,7 @@ const AppNavigator = () => {
           name="DrawerCategories" 
           component={CategoryStack}
           options={{
-            headerTitle: props => <Text style={styles.headerTitle}>Catégories</Text>,
+            headerTitle: () => <Text style={styles.headerTitle}>Catégories</Text>,
             drawerLabel: ({ focused, color }) => (
               <DrawerLabel label="Catégories" emoji="🗂️" />
             ),
@@ -231,7 +231,7 @@ const AppNavigator = () => {
           name="DrawerCart" 
           component={CartScreen}
           options={{
-            headerTitle: props => <Text style={styles.headerTitle}>Panier Ingrédients</Text>,
+            headerTitle: () => <Text style={styles.headerTitle}>Panier Ingrédients</Text>,
             drawerLabel: ({ focused, color }) => (
               <DrawerLabel label="Panier Ingrédients" emoji="🛒" />
             ),
