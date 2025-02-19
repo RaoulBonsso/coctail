@@ -8,7 +8,8 @@ import FavoritesScreen from '../screens/FavoritesScreen';
 import CartScreen from '../screens/CartScreen';
 import SearchScreen from '../screens/SearchScreen';
 import CocktailDetail from '../components/CocktailDetail';
-import CategoriesScreen from '../screens/FavoritesScreen'; // Assurez-vous d'avoir ce composant
+import CocktailsByCategory from '../components/CocktailsByCategory';
+import CategoriesScreen from '../screens/CategoryScreen'; // Assurez-vous d'avoir ce composant
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const Tab = createBottomTabNavigator();
@@ -56,12 +57,14 @@ const TabNavigator = () => {
   );
 };
 
+// App Navigator
 const AppNavigator = () => {
   return (
     <NavigationContainer>
       <Drawer.Navigator>
         <Drawer.Screen name="Home" component={HomeStack} />
         <Drawer.Screen name="Categories" component={CategoriesScreen} />
+        <Drawer.Screen name="CocktailsByCategory" component={CocktailsByCategory} options={{ drawerItemStyle: { display: 'none' } }} />
         <Drawer.Screen name="More Options" component={TabNavigator} />
       </Drawer.Navigator>
     </NavigationContainer>
