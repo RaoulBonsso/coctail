@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { fetchCocktailDetails } from '../api';
 import { useDispatch, useSelector } from 'react-redux';
-import { addFavorite, removeFavorite } from '../redux/actions';
+import { addFavorite, removeFavorite, addToCart } from '../redux/actions';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const CocktailDetail = ({ route }) => {
@@ -31,48 +31,65 @@ const CocktailDetail = ({ route }) => {
     }
   };
 
+  const handleAddToCart = (ingredient) => {
+    dispatch(addToCart(ingredient));
+  };
+
   if (!details) {
     return null; // ou un indicateur de chargement
   }
 
   return (
     <ScrollView style={styles.container}>
+      <View style={styles.imageContainer}>
+        <Image source={{ uri: details.strDrinkThumb }} style={styles.image} />
+        <TouchableOpacity onPress={handleToggleFavorite} style={styles.favoriteButton}>
+          <Icon 
+            name={isFavorite() ? "heart" : "heart-o"} 
+            size={30} 
+            color="red" 
+          />
+        </TouchableOpacity>
+      </View>
       <Text style={styles.title}>{details.strDrink}</Text>
-      <Image source={{ uri: details.strDrinkThumb }} style={styles.image} />
       <Text style={styles.instructions}>Instructions:</Text>
       <Text>{details.strInstructions}</Text>
       <Text style={styles.ingredientsTitle}>Ingrédients:</Text>
       {Object.keys(details).map((key) => {
         if (key.startsWith('strIngredient') && details[key]) {
+          const ingredientImage = getIngredientImage(details[key]); // Fonction pour obtenir l'image de l'ingrédient
           return (
-            <Text key={key}>
-              {details[key]} - {details[`strMeasure${key.slice(-1)}`]}
-            </Text>
+            <View key={key} style={styles.ingredientContainer}>
+              <Image source={{ uri: ingredientImage }} style={styles.ingredientImage} />
+              <Text style={styles.ingredientText}>
+                {details[key]} - {details[`strMeasure${key.slice(-1)}`]}
+              </Text>
+              <TouchableOpacity onPress={() => handleAddToCart(details[key])} style={styles.addButton}>
+                <Icon name="shopping-cart" size={24} color="#fff" />
+              </TouchableOpacity>
+            </View>
           );
         }
         return null;
       })}
-      <TouchableOpacity onPress={handleToggleFavorite}>
-        <Icon 
-          name={isFavorite() ? "heart" : "heart-o"} 
-          size={30} 
-          color="red" 
-          style={styles.favoriteIcon} 
-        />
-      </TouchableOpacity>
     </ScrollView>
   );
+};
+
+// Fonction fictive pour obtenir des images d'ingrédients
+const getIngredientImage = (ingredient) => {
+  // Remplacez cette logique par une API ou des images locales
+  return `https://www.thecocktaildb.com/images/ingredients/${ingredient}.png`;
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#f9f9f9',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  imageContainer: {
+    position: 'relative',
   },
   image: {
     width: '100%',
@@ -80,18 +97,60 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginVertical: 10,
   },
+  favoriteButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    borderRadius: 20,
+    padding: 5,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginVertical: 10,
+    color: '#333',
+  },
   instructions: {
     fontSize: 16,
     marginVertical: 10,
+    color: '#555',
   },
   ingredientsTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginVertical: 10,
+    color: '#007BFF',
   },
-  favoriteIcon: {
-    alignSelf: 'center',
-    marginTop: 10,
+  ingredientContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginVertical: 5,
+    padding: 10,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.5,
+  },
+  ingredientImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 5,
+    marginRight: 10,
+  },
+  ingredientText: {
+    fontSize: 16,
+    flex: 1,
+  },
+  addButton: {
+    backgroundColor: '#007BFF',
+    borderRadius: 5,
+    padding: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
