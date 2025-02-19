@@ -1,11 +1,11 @@
 import React from 'react';
-import { ActivityIndicator, View, StyleSheet, Text } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 
 const LoadingIndicator = () => {
   return (
     <View style={styles.container}>
       <ActivityIndicator size="large" color="#0000ff" />
-      <Text>Chargement...</Text> {/* Ajout d'un texte pour indiquer le chargement */}
+      <Text style={styles.text}>Chargement...</Text>
     </View>
   );
 };
@@ -16,6 +16,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  text: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#666',
+  }
 });
 
 export default LoadingIndicator;

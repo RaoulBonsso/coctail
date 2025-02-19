@@ -11,7 +11,7 @@ const CocktailList = ({ cocktails, onSelectCocktail, onAddToFavorites, onAddToCa
     <View style={styles.card}>
       <TouchableOpacity onPress={() => onSelectCocktail(item)}>
         <Image source={{ uri: item.strDrinkThumb }} style={styles.image} />
-        <Text style={styles.title}>{item.strDrink}</Text>
+        <Text style={styles.name}>{item.strDrink}</Text>
       </TouchableOpacity>
       <View style={[styles.buttonContainer, isFavoritesScreen && styles.buttonContainerFavorites]}>
         {!isFavoritesScreen && (
@@ -19,19 +19,23 @@ const CocktailList = ({ cocktails, onSelectCocktail, onAddToFavorites, onAddToCa
             onPress={() => onAddToFavorites(item)}
             style={styles.iconButton}
           >
-            <Icon 
-              name={isFavorite(item.idDrink) ? "heart" : "heart-o"} 
-              size={30} 
-              color="#f4511e" 
-            />
+            <Text style={styles.iconText}>
+              <Icon 
+                name={isFavorite(item.idDrink) ? "heart" : "heart-o"} 
+                size={24} 
+                color={isFavorite(item.idDrink) ? "#ff4444" : "#666"} 
+              />
+            </Text>
           </TouchableOpacity>
         )}
         <TouchableOpacity 
           onPress={() => onAddToCart(item)}
           style={[styles.addButton, isFavoritesScreen && styles.addButtonFavorites]}
         >
-          <Icon name="shopping-cart" size={20} color="#fff" style={styles.cartIcon} />
-          <Text style={styles.addButtonText}>Ajouter au panier</Text>
+          <Text style={styles.addButtonText}>
+            <Icon name="shopping-cart" size={20} color="#fff" style={styles.cartIcon} />
+            Ajouter au panier
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -49,42 +53,44 @@ const CocktailList = ({ cocktails, onSelectCocktail, onAddToFavorites, onAddToCa
 
 const styles = StyleSheet.create({
   list: {
-    padding: 10,
+    padding: 16,
   },
   card: {
     backgroundColor: '#fff',
-    borderRadius: 10,
-    marginBottom: 15,
-    padding: 15,
-    elevation: 5,
+    borderRadius: 15,
+    marginBottom: 16,
+    elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.1,
     shadowRadius: 4,
   },
   image: {
     width: '100%',
     height: 200,
-    borderRadius: 8,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
   },
-  title: {
-    fontSize: 20,
+  name: {
+    fontSize: 18,
     fontWeight: 'bold',
-    marginTop: 10,
-    marginBottom: 10,
-    color: '#2C3E50',
+    color: '#2c3e50',
+    padding: 12,
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 10,
+    paddingHorizontal: 12,
+    paddingBottom: 12,
   },
   buttonContainerFavorites: {
     justifyContent: 'center',
   },
   iconButton: {
-    padding: 5,
+    padding: 8,
+  },
+  iconText: {
+    color: '#666',
   },
   addButton: {
     flexDirection: 'row',

@@ -85,7 +85,9 @@ const CartScreen = ({ navigation }) => {
                     style={styles.quantityButton}
                     onPress={() => handleDecrement(item.idDrink, item.quantity)}
                   >
-                    <Icon name="minus" size={16} color="#fff" />
+                    <Text style={styles.buttonText}>
+                      <Icon name="minus" size={16} color="#fff" />
+                    </Text>
                   </TouchableOpacity>
                   <View style={styles.quantityDisplay}>
                     <Text style={styles.quantityText}>{item.quantity}</Text>
@@ -94,7 +96,9 @@ const CartScreen = ({ navigation }) => {
                     style={styles.quantityButton}
                     onPress={() => handleIncrement(item.idDrink)}
                   >
-                    <Icon name="plus" size={16} color="#fff" />
+                    <Text style={styles.buttonText}>
+                      <Icon name="plus" size={16} color="#fff" />
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -102,7 +106,9 @@ const CartScreen = ({ navigation }) => {
                 style={styles.removeButton}
                 onPress={() => handleRemove(item.idDrink, item.strDrink)}
               >
-                <Icon name="trash" size={20} color="#ff4444" />
+                <Text style={styles.buttonText}>
+                  <Icon name="trash" size={20} color="#ff4444" />
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -200,6 +206,9 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
   },
   quantityDisplay: {
     backgroundColor: '#f8f9fa',
