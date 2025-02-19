@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useDispatch, useSelector } from 'react-redux';
@@ -34,30 +34,69 @@ const CocktailsByCategory = ({ route, navigation }) => {
 
   const handleAddToCart = (cocktail) => {
     dispatch(addToCart(cocktail)); // Utilisez l'action Redux
+    Alert.alert(
+      "Ajouté au panier !",
+      `${cocktail.strDrink} a été ajouté à votre panier`,
+      [
+        {
+          text: "OK",
+          style: "default"
+        }
+      ],
+      { cancelable: true }
+    );
   };
+
+  const isFavorite = (cocktailId) => {
+    return favorites.some(fav => fav.idDrink === cocktailId);
+  };
+
+  const renderCocktailItem = ({ item }) => (
+    <View style={styles.card}>
+      <TouchableOpacity onPress={() => handleSelectCocktail(item)}>
+        <Image source={{ uri: item.strDrinkThumb }} style={styles.image} />
+        <Text style={styles.name}>{item.strDrink}</Text>
+      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity 
+          style={styles.iconButton} 
+          onPress={() => handleAddToFavorites(item)}
+        >
+          <Text style={styles.iconText}>
+            <Icon 
+              name={isFavorite(item.idDrink) ? "heart" : "heart-o"} 
+              size={24} 
+              color={isFavorite(item.idDrink) ? "#ff4444" : "#666"} 
+            />
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.addButton}
+          onPress={() => handleAddToCart(item)}
+        >
+          <Text style={styles.addButtonText}>Ajouter au panier</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
+  if (!cocktails || cocktails.length === 0) {
+    return (
+      <View style={styles.emptyContainer}>
+        <Text style={styles.emptyText}>Aucun cocktail trouvé dans cette catégorie</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{category} Cocktails</Text>
       <FlatList
         data={cocktails}
-        keyExtractor={(item) => item.idDrink.toString()} // Assurez-vous que la clé est une chaîne
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <TouchableOpacity onPress={() => handleSelectCocktail(item)}>
-              <Image source={{ uri: item.strDrinkThumb }} style={styles.image} />
-              <Text style={styles.cocktailName}>{item.strDrink}</Text>
-            </TouchableOpacity>
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity onPress={() => handleAddToFavorites(item)}>
-                <Icon name={favorites.some(fav => fav.idDrink === item.idDrink) ? "heart" : "heart-o"} size={30} color="red" />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleAddToCart(item)}>
-                <Text style={styles.addToCartButton}>Ajouter au panier</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
+        keyExtractor={(item) => item.idDrink.toString()}
+        renderItem={renderCocktailItem}
+        contentContainerStyle={styles.list}
+        showsVerticalScrollIndicator={false}
       />
     </View>
   );
@@ -75,35 +114,66 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
+  list: {
+    padding: 16,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+  },
   card: {
     backgroundColor: '#fff',
-    borderRadius: 10,
-    marginBottom: 20,
-    padding: 15,
+    borderRadius: 15,
+    marginBottom: 16,
     elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   image: {
     width: '100%',
     height: 200,
-    borderRadius: 10,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
   },
-  cocktailName: {
+  name: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginVertical: 10,
+    color: '#2c3e50',
+    padding: 12,
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 10,
+    paddingHorizontal: 12,
+    paddingBottom: 12,
   },
-  addToCartButton: {
-    backgroundColor: '#007BFF',
+  iconButton: {
+    padding: 8,
+  },
+  iconText: {
+    color: '#666',
+  },
+  addButton: {
+    backgroundColor: '#f4511e',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    elevation: 2,
+  },
+  addButtonText: {
     color: '#fff',
-    padding: 10,
-    borderRadius: 5,
-    textAlign: 'center',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
 
