@@ -1,109 +1,190 @@
-import React, { useState, useEffect } from 'react';
-import { View, TextInput, FlatList, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
+  Keyboard,
+  Animated,
+} from 'react-native';
 import axios from 'axios';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { useDispatch, useSelector } from 'react-redux';
 import { addFavorite, removeFavorite } from '../redux/actions';
-import Icon from 'react-native-vector-icons/FontAwesome';
 
-const API_URL = 'https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=';
-
-const fetchCocktailsByIngredient = async (ingredient) => {
-  try {
-    const response = await axios.get(`${API_URL}${ingredient}`);
-    console.log('Réponse de l\'API:', response.data); // Afficher la réponse de l'API dans la console
-    return response.data.drinks || []; // Retourne un tableau de cocktails
-  } catch (error) {
-    console.error('Erreur lors de la récupération des cocktails:', error);
-    throw error; // Lance l'erreur pour qu'elle soit gérée dans le composant
-  }
-};
-
-const SearchScreen = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [cocktails, setCocktails] = useState([]);
-  const [error, setError] = useState('');
+const SearchScreen = ({ navigation }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const dispatch = useDispatch();
   const favorites = useSelector((state) => state.favorites);
+  const fadeAnim = React.useRef(new Animated.Value(1)).current;
 
-  useEffect(() => {
-    const fetchCocktails = async () => {
-      if (searchTerm) {
-        try {
-          const results = await fetchCocktailsByIngredient(searchTerm);
-          console.log('Cocktails trouvés:', results); // Afficher les cocktails trouvés
-          if (results.length > 0) {
-            setCocktails(results);
-            setError(''); // Réinitialisez l'erreur si la recherche réussit
-          } else {
-            setCocktails([]);
-            setError('Aucun cocktail trouvé.');
-          }
-        } catch (err) {
-          console.error(err);
-          setError('Erreur lors de la recherche des cocktails.');
-        }
-      } else {
-        setCocktails([]);
-        setError('');
-      }
-    };
+  const handleSearch = async (text) => {
+    setSearchQuery(text);
+    if (text.length < 2) {
+      setResults([]);
+      return;
+    }
 
-    const delayDebounceFn = setTimeout(() => {
-      fetchCocktails();
-    }, 300); // Délai de 300 ms
+    setLoading(true);
+    setError(null);
 
-    return () => clearTimeout(delayDebounceFn); // Nettoyez le timeout
-  }, [searchTerm]);
+    try {
+      const response = await axios.get(
+        `https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${text}`
+      );
+      
+      Animated.sequence([
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 150,
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 150,
+          useNativeDriver: true,
+        }),
+      ]).start();
 
-  const isFavorite = (cocktailId) => {
-    return favorites.some(fav => fav.idDrink === cocktailId);
+      setResults(response.data.drinks || []);
+    } catch (err) {
+      setError('Une erreur est survenue lors de la recherche');
+      setResults([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleToggleFavorite = (cocktail) => {
-    if (isFavorite(cocktail.idDrink)) {
+  const handleCocktailPress = (cocktail) => {
+    Keyboard.dismiss();
+    navigation.navigate('CocktailDetail', { cocktail });
+  };
+
+  const toggleFavorite = (cocktail) => {
+    const isFavorite = favorites.some((fav) => fav.idDrink === cocktail.idDrink);
+    if (isFavorite) {
       dispatch(removeFavorite(cocktail.idDrink));
     } else {
       dispatch(addFavorite(cocktail));
     }
   };
 
-  const handleAddToCart = (cocktail) => {
-    // Logic to add cocktail to cart (to be implemented)
-    console.log(`${cocktail.strDrink} ajouté au panier.`);
+  const renderSearchBar = () => (
+    <View style={styles.searchBarContainer}>
+      <Icon name="search" size={20} color="#666" style={styles.searchIcon} />
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Rechercher un cocktail..."
+        value={searchQuery}
+        onChangeText={handleSearch}
+        autoCapitalize="none"
+        autoCorrect={false}
+      />
+      {searchQuery.length > 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            setSearchQuery('');
+            setResults([]);
+          }}
+          style={styles.clearButton}
+        >
+          <Icon name="times-circle" size={20} color="#666" />
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+
+  const renderItem = ({ item }) => {
+    const isFavorite = favorites.some((fav) => fav.idDrink === item.idDrink);
+    return (
+      <TouchableOpacity
+        style={styles.cocktailCard}
+        onPress={() => handleCocktailPress(item)}
+        activeOpacity={0.7}
+      >
+        <Image source={{ uri: item.strDrinkThumb }} style={styles.cocktailImage} />
+        <View style={styles.cocktailInfo}>
+          <Text style={styles.cocktailName}>{item.strDrink}</Text>
+          <Text style={styles.cocktailCategory}>{item.strCategory}</Text>
+        </View>
+        <TouchableOpacity
+          style={styles.favoriteButton}
+          onPress={() => toggleFavorite(item)}
+        >
+          <Icon
+            name={isFavorite ? 'heart' : 'heart-o'}
+            size={24}
+            color={isFavorite ? '#f4511e' : '#666'}
+          />
+        </TouchableOpacity>
+      </TouchableOpacity>
+    );
+  };
+
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <View style={styles.centerContainer}>
+          <ActivityIndicator size="large" color="#f4511e" />
+        </View>
+      );
+    }
+
+    if (error) {
+      return (
+        <View style={styles.centerContainer}>
+          <Icon name="exclamation-circle" size={50} color="#f4511e" />
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      );
+    }
+
+    if (results.length === 0 && searchQuery.length >= 2) {
+      return (
+        <View style={styles.centerContainer}>
+          <Icon name="search" size={50} color="#666" />
+          <Text style={styles.noResultsText}>
+            Aucun cocktail trouvé pour "{searchQuery}"
+          </Text>
+        </View>
+      );
+    }
+
+    if (results.length === 0) {
+      return (
+        <View style={styles.centerContainer}>
+          <Icon name="glass" size={50} color="#666" />
+          <Text style={styles.placeholderText}>
+            Recherchez parmi notre collection de cocktails
+          </Text>
+        </View>
+      );
+    }
+
+    return (
+      <Animated.View style={{ opacity: fadeAnim, flex: 1 }}>
+        <FlatList
+          data={results}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.idDrink}
+          contentContainerStyle={styles.listContainer}
+          showsVerticalScrollIndicator={false}
+        />
+      </Animated.View>
+    );
   };
 
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder="Rechercher par ingrédient..."
-        value={searchTerm}
-        onChangeText={setSearchTerm}
-      />
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
-      <FlatList
-        data={cocktails}
-        keyExtractor={(item) => item.idDrink ? item.idDrink.toString() : Math.random().toString()} // Utilisez une clé unique
-        renderItem={({ item }) => (
-          item && item.idDrink ? ( // Vérifiez que item et idDrink existent
-            <View style={styles.cocktailItem}>
-              <Image source={{ uri: item.strDrinkThumb }} style={styles.cocktailImage} />
-              <Text style={styles.cocktailName}>{item.strDrink}</Text>
-              <TouchableOpacity onPress={() => handleToggleFavorite(item)}>
-                <Icon 
-                  name={isFavorite(item.idDrink) ? "heart" : "heart-o"} 
-                  size={30} 
-                  color="red" 
-                />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleAddToCart(item)}>
-                <Icon name="shopping-cart" size={30} color="blue" />
-              </TouchableOpacity>
-            </View>
-          ) : null // Ne rien afficher si item est indéfini
-        )}
-        ListEmptyComponent={<Text style={styles.emptyText}>Aucun cocktail à afficher.</Text>}
-      />
+      {renderSearchBar()}
+      {renderContent()}
     </View>
   );
 };
@@ -111,42 +192,93 @@ const SearchScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#f5f6fa',
   },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    marginBottom: 20,
-  },
-  cocktailItem: {
+  searchBarContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    backgroundColor: '#fff',
+    margin: 15,
+    paddingHorizontal: 15,
+    borderRadius: 25,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
-  cocktailImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 5,
+  searchIcon: {
     marginRight: 10,
   },
-  cocktailName: {
+  searchInput: {
     flex: 1,
+    height: 50,
+    fontSize: 16,
+  },
+  clearButton: {
+    padding: 8,
+  },
+  listContainer: {
+    padding: 15,
+  },
+  cocktailCard: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    marginBottom: 15,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    overflow: 'hidden',
+  },
+  cocktailImage: {
+    width: 100,
+    height: 100,
+  },
+  cocktailInfo: {
+    flex: 1,
+    padding: 15,
+    justifyContent: 'center',
+  },
+  cocktailName: {
     fontSize: 18,
+    fontWeight: 'bold',
+    color: '#2c3e50',
+    marginBottom: 5,
+  },
+  cocktailCategory: {
+    fontSize: 14,
+    color: '#7f8c8d',
+  },
+  favoriteButton: {
+    padding: 15,
+    justifyContent: 'center',
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
   },
   errorText: {
-    color: 'red',
-    marginBottom: 10,
-  },
-  emptyText: {
-    textAlign: 'center',
-    padding: 20,
+    marginTop: 10,
     fontSize: 16,
-    color: 'gray',
+    color: '#e74c3c',
+    textAlign: 'center',
+  },
+  noResultsText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#7f8c8d',
+    textAlign: 'center',
+  },
+  placeholderText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#7f8c8d',
+    textAlign: 'center',
   },
 });
 

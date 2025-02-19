@@ -10,7 +10,6 @@ import CartScreen from '../screens/CartScreen';
 import SearchScreen from '../screens/SearchScreen';
 import CocktailDetail from '../components/CocktailDetail';
 import CocktailsByCategory from '../components/CocktailsByCategory';
-import details from '../components/details';
 import CategoriesScreen from '../screens/CategoryScreen';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -18,6 +17,7 @@ const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
+// Composant pour le label du drawer avec emoji
 const DrawerLabel = ({ label, emoji }) => (
   <View style={styles.drawerLabel}>
     <Text style={styles.drawerEmoji}>{emoji}</Text>
@@ -29,20 +29,20 @@ const DrawerLabel = ({ label, emoji }) => (
 const HomeStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Cocktail List" component={HomeScreen} />
+      <Stack.Screen 
+        name="Cocktail List" 
+        component={HomeScreen}
+      />
       <Stack.Screen 
         name="CocktailDetail" 
         component={CocktailDetail}
         options={{
           headerShown: true,
-          title: 'Détails du Cocktail',
+          headerTitle: props => <Text style={styles.headerTitle}>Détails du Cocktail</Text>,
           headerStyle: {
             backgroundColor: '#f4511e',
           },
           headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
         }}
       />
       <Stack.Screen 
@@ -50,14 +50,11 @@ const HomeStack = () => {
         component={CocktailsByCategory}
         options={{
           headerShown: true,
-          title: 'Cocktails par Catégorie',
+          headerTitle: props => <Text style={styles.headerTitle}>Cocktails par Catégorie</Text>,
           headerStyle: {
             backgroundColor: '#f4511e',
           },
           headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
         }}
       />
     </Stack.Navigator>
@@ -74,14 +71,11 @@ const FavoritesStack = () => {
         component={CocktailDetail}
         options={{
           headerShown: true,
-          title: 'Détails du Cocktail',
+          headerTitle: props => <Text style={styles.headerTitle}>Détails du Cocktail</Text>,
           headerStyle: {
             backgroundColor: '#f4511e',
           },
           headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
         }}
       />
     </Stack.Navigator>
@@ -98,14 +92,11 @@ const SearchStack = () => {
         component={CocktailDetail}
         options={{
           headerShown: true,
-          title: 'Détails du Cocktail',
+          headerTitle: props => <Text style={styles.headerTitle}>Détails du Cocktail</Text>,
           headerStyle: {
             backgroundColor: '#f4511e',
           },
           headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
         }}
       />
     </Stack.Navigator>
@@ -116,20 +107,20 @@ const SearchStack = () => {
 const CategoryStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="CategoriesList" component={CategoriesScreen} />
+      <Stack.Screen 
+        name="CategoriesList" 
+        component={CategoriesScreen}
+      />
       <Stack.Screen 
         name="CocktailsByCategory" 
         component={CocktailsByCategory}
         options={({ route }) => ({
           headerShown: true,
-          title: route.params.category,
+          headerTitle: props => <Text style={styles.headerTitle}>{route.params.category}</Text>,
           headerStyle: {
             backgroundColor: '#f4511e',
           },
           headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
         })}
       />
       <Stack.Screen 
@@ -137,14 +128,11 @@ const CategoryStack = () => {
         component={CocktailDetail}
         options={{
           headerShown: true,
-          title: 'Détails du Cocktail',
+          headerTitle: props => <Text style={styles.headerTitle}>Détails du Cocktail</Text>,
           headerStyle: {
             backgroundColor: '#f4511e',
           },
           headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
         }}
       />
     </Stack.Navigator>
@@ -178,21 +166,21 @@ const TabNavigator = () => {
         name="HomeTab" 
         component={HomeStack}
         options={{
-          title: 'Accueil',
+          tabBarLabel: props => <Text style={[styles.tabBarLabel, { color: props.color }]}>Accueil</Text>
         }}
       />
       <Tab.Screen 
         name="Favorites" 
         component={FavoritesStack}
         options={{
-          title: 'Favoris',
+          tabBarLabel: props => <Text style={[styles.tabBarLabel, { color: props.color }]}>Favoris</Text>
         }}
       />
       <Tab.Screen 
         name="Search" 
         component={SearchStack}
         options={{
-          title: 'Recherche',
+          tabBarLabel: props => <Text style={[styles.tabBarLabel, { color: props.color }]}>Recherche</Text>
         }}
       />
     </Tab.Navigator>
@@ -223,7 +211,7 @@ const AppNavigator = () => {
           name="MainTabs" 
           component={TabNavigator}
           options={{
-            title: 'Nos Cocktails',
+            headerTitle: props => <Text style={styles.headerTitle}>Nos Cocktails</Text>,
             drawerLabel: ({ focused, color }) => (
               <DrawerLabel label="Nos Cocktails" emoji="🏠" />
             ),
@@ -233,7 +221,7 @@ const AppNavigator = () => {
           name="DrawerCategories" 
           component={CategoryStack}
           options={{
-            title: 'Catégories',
+            headerTitle: props => <Text style={styles.headerTitle}>Catégories</Text>,
             drawerLabel: ({ focused, color }) => (
               <DrawerLabel label="Catégories" emoji="🗂️" />
             ),
@@ -243,7 +231,7 @@ const AppNavigator = () => {
           name="DrawerCart" 
           component={CartScreen}
           options={{
-            title: 'Panier Ingrédients',
+            headerTitle: props => <Text style={styles.headerTitle}>Panier Ingrédients</Text>,
             drawerLabel: ({ focused, color }) => (
               <DrawerLabel label="Panier Ingrédients" emoji="🛒" />
             ),
@@ -266,6 +254,15 @@ const styles = StyleSheet.create({
   },
   drawerText: {
     fontSize: 16,
+  },
+  headerTitle: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  tabBarLabel: {
+    fontSize: 12,
+    textAlign: 'center',
   },
 });
 
