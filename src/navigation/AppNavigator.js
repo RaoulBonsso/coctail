@@ -9,6 +9,7 @@ import CartScreen from '../screens/CartScreen';
 import SearchScreen from '../screens/SearchScreen';
 import CocktailDetail from '../components/CocktailDetail';
 import CocktailsByCategory from '../components/CocktailsByCategory';
+import details from '../components/details';
 import CategoriesScreen from '../screens/CategoryScreen'; // Assurez-vous d'avoir ce composant
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -65,6 +66,7 @@ const AppNavigator = () => {
         <Drawer.Screen name="Home" component={HomeStack} />
         <Drawer.Screen name="Categories" component={CategoriesScreen} />
         <Drawer.Screen name="CocktailsByCategory" component={CocktailsByCategory} options={{ drawerItemStyle: { display: 'none' } }} />
+        <Stack.Screen name="CocktailDetail" component={details} options={{ drawerItemStyle: { display: 'none' } }} /> 
         <Drawer.Screen name="More Options" component={TabNavigator} />
       </Drawer.Navigator>
     </NavigationContainer>

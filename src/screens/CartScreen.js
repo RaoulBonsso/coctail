@@ -3,88 +3,47 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react
 import { useSelector, useDispatch } from 'react-redux';
 import { incrementCartItem, decrementCartItem, removeFromCart } from '../redux/actions';
 
-const CartScreen = () => {
+const CartScreen = ({ navigation }) => {
   const cart = useSelector((state) => state.cart);
   const dispatch = useDispatch();
 
-  const handleIncrement = (itemId) => {
-    dispatch(incrementCartItem(itemId));
+  const handleIncrement = (cocktailId) => {
+    dispatch(incrementCartItem(cocktailId));
   };
 
-  const handleDecrement = (itemId) => {
-    dispatch(decrementCartItem(itemId));
+  const handleDecrement = (cocktailId) => {
+    dispatch(decrementCartItem(cocktailId));
   };
 
-  const handleRemove = (itemId) => {
-    dispatch(removeFromCart(itemId));
+  const handleRemove = (cocktailId) => {
+    dispatch(removeFromCart(cocktailId));
   };
-
-  // Séparez les cocktails et les ingrédients
-  const cocktails = cart.filter(item => item.type === 'cocktail');
-  const ingredients = cart.filter(item => item.type === 'ingredient');
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Mon Panier</Text>
-
-      {cocktails.length > 0 && (
-        <View>
-          <Text style={styles.sectionTitle}>Cocktails</Text>
-          <FlatList
-            data={cocktails}
-            keyExtractor={(item) => item.idDrink.toString()} // Assurez-vous d'utiliser une clé unique
-            renderItem={({ item }) => (
-              <View style={styles.card}>
-                <Image source={{ uri: item.strDrinkThumb }} style={styles.image} />
-                <Text style={styles.cocktailName}>{item.strDrink}</Text>
-                <Text style={styles.quantity}>Quantité: {item.quantity}</Text>
-                <View style={styles.buttonContainer}>
-                  <TouchableOpacity onPress={() => handleIncrement(item.idDrink)}>
-                    <Text style={styles.button}>+</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => handleDecrement(item.idDrink)}>
-                    <Text style={styles.button}>-</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => handleRemove(item.idDrink)}>
-                    <Text style={styles.removeButton}>Retirer</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            )}
-          />
-        </View>
-      )}
-
-      {ingredients.length > 0 && (
-        <View>
-          <Text style={styles.sectionTitle}>Ingrédients</Text>
-          <FlatList
-            data={ingredients}
-            keyExtractor={(item) => item.idIngredient.toString()} // Assurez-vous d'utiliser une clé unique
-            renderItem={({ item }) => (
-              <View style={styles.card}>
-                <Text style={styles.cocktailName}>{item.strIngredient}</Text>
-                <Text style={styles.quantity}>Quantité: {item.quantity}</Text>
-                <View style={styles.buttonContainer}>
-                  <TouchableOpacity onPress={() => handleIncrement(item.idIngredient)}>
-                    <Text style={styles.button}>+</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => handleDecrement(item.idIngredient)}>
-                    <Text style={styles.button}>-</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => handleRemove(item.idIngredient)}>
-                    <Text style={styles.removeButton}>Retirer</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            )}
-          />
-        </View>
-      )}
-      
-      {cocktails.length === 0 && ingredients.length === 0 && (
-        <Text style={styles.emptyText}>Votre panier est vide.</Text>
-      )}
+      <FlatList
+        data={cart}
+        keyExtractor={(item) => item.idDrink}
+        renderItem={({ item }) => (
+          <View style={styles.card}>
+            <Image source={{ uri: item.strDrinkThumb }} style={styles.image} />
+            <Text style={styles.cocktailName}>{item.strDrink}</Text>
+            <Text style={styles.quantity}>Quantité: {item.quantity}</Text>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity onPress={() => handleIncrement(item.idDrink)}>
+                <Text style={styles.button}>+</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => handleDecrement(item.idDrink)}>
+                <Text style={styles.button}>-</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => handleRemove(item.idDrink)}>
+                <Text style={styles.removeButton}>Retirer</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+      />
     </View>
   );
 };
@@ -101,12 +60,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
     color: '#343a40',
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginVertical: 10,
-    color: '#007BFF',
   },
   card: {
     backgroundColor: '#fff',
@@ -159,12 +112,6 @@ const styles = StyleSheet.create({
     color: 'white',
     marginLeft: 10,
     fontWeight: 'bold',
-  },
-  emptyText: {
-    textAlign: 'center',
-    padding: 20,
-    fontSize: 16,
-    color: 'gray',
   },
 });
 

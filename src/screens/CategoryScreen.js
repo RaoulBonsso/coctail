@@ -11,7 +11,7 @@ const CategoriesScreen = ({ navigation }) => {
     const fetchCategories = async () => {
       try {
         const response = await axios.get(CATEGORIES_URL);
-        setCategories(response.data.drinks); // Assurez-vous que la structure de réponse est correcte
+        setCategories(response.data.drinks);
       } catch (error) {
         console.error('Erreur lors de la récupération des catégories:', error);
       }
@@ -24,6 +24,20 @@ const CategoriesScreen = ({ navigation }) => {
     navigation.navigate('CocktailsByCategory', { category });
   };
 
+  const emojiMap = {
+    Cocktail: '🍹',
+    'Ordinary Drink': '🥤',
+    'Punch / Party Drink': '🥳',
+    Shake: '🍸',
+    'Other / Unknown': '❓',
+    Cocoa: '🍫',
+    Shot: '🥃',
+    'Coffee / Tea': '☕',
+    'Homemade Liqueur': '🍶',
+    Beer: '🍺',
+    'Soft Drink': '🥤',
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Catégories de Cocktails</Text>
@@ -31,7 +45,8 @@ const CategoriesScreen = ({ navigation }) => {
         data={categories}
         keyExtractor={(item) => item.strCategory}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleCategoryPress(item.strCategory)}>
+          <TouchableOpacity style={styles.card} onPress={() => handleCategoryPress(item.strCategory)}>
+            <Text style={styles.emoji}>{emojiMap[item.strCategory] || '🍸'}</Text>
             <Text style={styles.categoryItem}>{item.strCategory}</Text>
           </TouchableOpacity>
         )}
@@ -52,11 +67,21 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
-  categoryItem: {
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 15,
+    marginVertical: 10,
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    elevation: 3,
+  },
+  emoji: {
+    fontSize: 30,
+    marginRight: 15,
+  },
+  categoryItem: {
     fontSize: 18,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
   },
 });
 
