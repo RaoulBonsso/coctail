@@ -1,54 +1,38 @@
 import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const CocktailList = ({ cocktails, favorites, onSelectCocktail, onAddToFavorites, onAddToCart, isFavoritesScreen }) => {
+const CocktailList = ({ cocktails, onSelectCocktail, onAddToFavorites, onAddToCart, favorites = [], isFavoritesScreen = false }) => {
   const isFavorite = (cocktailId) => {
     return favorites.some(fav => fav.idDrink === cocktailId);
-  };
-
-  const handleAddToCart = (cocktail) => {
-    onAddToCart(cocktail);
-    Alert.alert(
-      "Ajouté au panier !",
-      `${cocktail.strDrink} a été ajouté à votre panier`,
-      [
-        {
-          text: "OK",
-          style: "default"
-        }
-      ],
-      { cancelable: true }
-    );
   };
 
   const renderCocktailItem = ({ item }) => (
     <View style={styles.card}>
       <TouchableOpacity onPress={() => onSelectCocktail(item)}>
         <Image source={{ uri: item.strDrinkThumb }} style={styles.image} />
-        <Text style={styles.name}>{item.strDrink}</Text>
+        <Text style={styles.title}>{item.strDrink}</Text>
       </TouchableOpacity>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity 
-          style={styles.iconButton} 
-          onPress={() => onAddToFavorites(item)}
-        >
-          <Text style={styles.iconText}>
-            <Icon 
-              name={isFavorite(item.idDrink) ? "heart" : "heart-o"} 
-              size={24} 
-              color={isFavorite(item.idDrink) ? "#ff4444" : "#666"} 
-            />
-          </Text>
-        </TouchableOpacity>
+      <View style={[styles.buttonContainer, isFavoritesScreen && styles.buttonContainerFavorites]}>
         {!isFavoritesScreen && (
           <TouchableOpacity 
-            style={styles.addButton}
-            onPress={() => handleAddToCart(item)}
+            onPress={() => onAddToFavorites(item)}
+            style={styles.iconButton}
           >
-            <Text style={styles.addButtonText}>Ajouter au panier</Text>
+            <Icon 
+              name={isFavorite(item.idDrink) ? "heart" : "heart-o"} 
+              size={30} 
+              color="#f4511e" 
+            />
           </TouchableOpacity>
         )}
+        <TouchableOpacity 
+          onPress={() => onAddToCart(item)}
+          style={[styles.addButton, isFavoritesScreen && styles.addButtonFavorites]}
+        >
+          <Icon name="shopping-cart" size={20} color="#fff" style={styles.cartIcon} />
+          <Text style={styles.addButtonText}>Ajouter au panier</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -65,54 +49,61 @@ const CocktailList = ({ cocktails, favorites, onSelectCocktail, onAddToFavorites
 
 const styles = StyleSheet.create({
   list: {
-    padding: 16,
+    padding: 10,
   },
   card: {
     backgroundColor: '#fff',
-    borderRadius: 15,
-    marginBottom: 16,
-    elevation: 3,
+    borderRadius: 10,
+    marginBottom: 15,
+    padding: 15,
+    elevation: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.3,
     shadowRadius: 4,
   },
   image: {
     width: '100%',
     height: 200,
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
+    borderRadius: 8,
   },
-  name: {
-    fontSize: 18,
+  title: {
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#2c3e50',
-    padding: 12,
+    marginTop: 10,
+    marginBottom: 10,
+    color: '#2C3E50',
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingBottom: 12,
+    marginTop: 10,
+  },
+  buttonContainerFavorites: {
+    justifyContent: 'center',
   },
   iconButton: {
-    padding: 8,
-  },
-  iconText: {
-    color: '#666',
+    padding: 5,
   },
   addButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#f4511e',
-    paddingHorizontal: 16,
+    paddingHorizontal: 15,
     paddingVertical: 8,
     borderRadius: 20,
-    elevation: 2,
+  },
+  addButtonFavorites: {
+    paddingHorizontal: 25,
+  },
+  cartIcon: {
+    marginRight: 8,
   },
   addButtonText: {
     color: '#fff',
-    fontSize: 14,
     fontWeight: '600',
+    fontSize: 16,
   },
 });
 

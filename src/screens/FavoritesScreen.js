@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import CocktailList from '../components/CocktailList';
-import { addToCart } from '../redux/actions';
+import { addToCart, addToFavorites } from '../redux/actions';
 
 const FavoritesScreen = ({ navigation }) => {
   const favorites = useSelector((state) => state.favorites);
@@ -16,15 +16,21 @@ const FavoritesScreen = ({ navigation }) => {
     dispatch(addToCart(cocktail));
   };
 
+  const handleAddToFavorites = (cocktail) => {
+    dispatch(addToFavorites(cocktail));
+  };
+
   return (
     <View style={styles.container}>
       {favorites.length === 0 ? (
         <Text style={styles.message}>Aucun cocktail favori trouvé.</Text>
       ) : (
         <CocktailList 
-          cocktails={favorites} 
+          cocktails={favorites}
+          favorites={favorites}
           onSelectCocktail={handleSelectCocktail}
           onAddToCart={handleAddToCart}
+          onAddToFavorites={handleAddToFavorites}
           isFavoritesScreen={true}
         />
       )}
