@@ -1,10 +1,25 @@
 import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const CocktailList = ({ cocktails, onSelectCocktail, onAddToFavorites, onAddToCart, favorites = [], isFavoritesScreen = false }) => {
   const isFavorite = (cocktailId) => {
     return favorites.some(fav => fav.idDrink === cocktailId);
+  };
+
+  const handleAddToCart = (cocktail) => {
+    onAddToCart(cocktail);
+    Alert.alert(
+      "Ajouté au panier !",
+      `${cocktail.strDrink} a été ajouté à votre panier`,
+      [
+        {
+          text: "OK",
+          style: "default"
+        }
+      ],
+      { cancelable: true }
+    );
   };
 
   const renderCocktailItem = ({ item }) => (
@@ -29,7 +44,7 @@ const CocktailList = ({ cocktails, onSelectCocktail, onAddToFavorites, onAddToCa
           </TouchableOpacity>
         )}
         <TouchableOpacity 
-          onPress={() => onAddToCart(item)}
+          onPress={() => handleAddToCart(item)}
           style={[styles.addButton, isFavoritesScreen && styles.addButtonFavorites]}
         >
           <Text style={styles.addButtonText}>
