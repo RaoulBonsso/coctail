@@ -243,9 +243,9 @@ const AppNavigator = () => {
           name="DrawerCart" 
           component={CartScreen}
           options={{
-            headerTitle: () => <Text style={styles.headerTitle}>Panier Ingrédients</Text>,
+            headerTitle: () => <Text style={styles.headerTitle}>Panier Cocktail</Text>,
             drawerLabel: ({ focused, color }) => (
-              <DrawerLabel label="Panier Ingrédients" emoji="🛒" />
+              <DrawerLabel label="Panier Cocktail" emoji="🛒" />
             ),
           }}
         />
