@@ -43,114 +43,158 @@ const CocktailDetail = ({ route }) => {
     <ScrollView style={styles.container}>
       <View style={styles.imageContainer}>
         <Image source={{ uri: details.strDrinkThumb }} style={styles.image} />
+        <View style={styles.overlay}>
+          <Text style={styles.title}>{details.strDrink}</Text>
+        </View>
         <TouchableOpacity onPress={handleToggleFavorite} style={styles.favoriteButton}>
           <Icon 
             name={isFavorite() ? "heart" : "heart-o"} 
             size={30} 
-            color="red" 
+            color={isFavorite() ? "#f4511e" : "#fff"} 
           />
         </TouchableOpacity>
       </View>
-      <Text style={styles.title}>{details.strDrink}</Text>
-      <Text style={styles.instructions}>Instructions:</Text>
-      <Text>{details.strInstructions}</Text>
-      <Text style={styles.ingredientsTitle}>Ingrédients:</Text>
-      {Object.keys(details).map((key) => {
-        if (key.startsWith('strIngredient') && details[key]) {
-          const ingredientImage = getIngredientImage(details[key]); // Fonction pour obtenir l'image de l'ingrédient
-          return (
-            <View key={key} style={styles.ingredientContainer}>
-              <Image source={{ uri: ingredientImage }} style={styles.ingredientImage} />
-              <Text style={styles.ingredientText}>
-                {details[key]} - {details[`strMeasure${key.slice(-1)}`]}
-              </Text>
-              <TouchableOpacity onPress={() => handleAddToCart(details[key])} style={styles.addButton}>
-                <Icon name="shopping-cart" size={24} color="#fff" />
-              </TouchableOpacity>
-            </View>
-          );
-        }
-        return null;
-      })}
+
+      <View style={styles.contentContainer}>
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Icon name="info-circle" size={24} color="#f4511e" />
+            <Text style={styles.sectionTitle}>Instructions</Text>
+          </View>
+          <Text style={styles.instructions}>{details.strInstructions}</Text>
+        </View>
+
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Icon name="list" size={24} color="#f4511e" />
+            <Text style={styles.sectionTitle}>Ingrédients</Text>
+          </View>
+          {Object.keys(details).map((key) => {
+            if (key.startsWith('strIngredient') && details[key]) {
+              const measure = details[`strMeasure${key.slice(-1)}`] || '';
+              return (
+                <View key={key} style={styles.ingredientContainer}>
+                  <Image 
+                    source={{ uri: `https://www.thecocktaildb.com/images/ingredients/${details[key]}-Small.png` }} 
+                    style={styles.ingredientImage} 
+                  />
+                  <View style={styles.ingredientInfo}>
+                    <Text style={styles.ingredientName}>{details[key]}</Text>
+                    <Text style={styles.measureText}>{measure}</Text>
+                  </View>
+                  <TouchableOpacity 
+                    onPress={() => handleAddToCart(details[key])} 
+                    style={styles.addButton}
+                  >
+                    <Icon name="plus" size={20} color="#fff" />
+                  </TouchableOpacity>
+                </View>
+              );
+            }
+            return null;
+          })}
+        </View>
+      </View>
     </ScrollView>
   );
-};
-
-// Fonction fictive pour obtenir des images d'ingrédients
-const getIngredientImage = (ingredient) => {
-  // Remplacez cette logique par une API ou des images locales
-  return `https://www.thecocktaildb.com/images/ingredients/${ingredient}.png`;
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#f8f9fa',
   },
   imageContainer: {
     position: 'relative',
+    height: 300,
   },
   image: {
     width: '100%',
-    height: 300,
-    borderRadius: 10,
-    marginVertical: 10,
+    height: '100%',
+  },
+  overlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    padding: 20,
+  },
+  title: {
+    color: '#fff',
+    fontSize: 28,
+    fontWeight: 'bold',
   },
   favoriteButton: {
     position: 'absolute',
-    top: 10,
-    right: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-    borderRadius: 20,
-    padding: 5,
+    top: 20,
+    right: 20,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    padding: 12,
+    borderRadius: 30,
   },
-  title: {
-    fontSize: 24,
+  contentContainer: {
+    padding: 20,
+  },
+  section: {
+    marginBottom: 25,
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    padding: 15,
+    elevation: 3,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  sectionTitle: {
+    fontSize: 22,
     fontWeight: 'bold',
-    marginVertical: 10,
+    marginLeft: 10,
     color: '#333',
   },
   instructions: {
     fontSize: 16,
-    marginVertical: 10,
-    color: '#555',
-  },
-  ingredientsTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginVertical: 10,
-    color: '#007BFF',
+    lineHeight: 24,
+    color: '#666',
   },
   ingredientContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginVertical: 5,
+    backgroundColor: '#f8f9fa',
     padding: 10,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.5,
+    borderRadius: 10,
+    marginBottom: 10,
   },
   ingredientImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 5,
-    marginRight: 10,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#fff',
   },
-  ingredientText: {
-    fontSize: 16,
+  ingredientInfo: {
     flex: 1,
+    marginLeft: 15,
+  },
+  ingredientName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+  },
+  measureText: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 2,
   },
   addButton: {
-    backgroundColor: '#007BFF',
-    borderRadius: 5,
-    padding: 5,
-    alignItems: 'center',
+    backgroundColor: '#f4511e',
+    padding: 10,
+    borderRadius: 20,
+    width: 40,
+    height: 40,
     justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
