@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const CocktailList = ({ cocktails, onSelectCocktail, onAddToFavorites, onAddToCart, favorites = [] }) => {
+const CocktailList = ({ cocktails, onSelectCocktail, onAddToFavorites, onAddToCart, favorites = [], isFavoritesScreen = false }) => {
   const isFavorite = (cocktailId) => {
     return favorites.some(fav => fav.idDrink === cocktailId);
   };
@@ -13,20 +13,22 @@ const CocktailList = ({ cocktails, onSelectCocktail, onAddToFavorites, onAddToCa
         <Image source={{ uri: item.strDrinkThumb }} style={styles.image} />
         <Text style={styles.title}>{item.strDrink}</Text>
       </TouchableOpacity>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity 
-          onPress={() => onAddToFavorites(item)}
-          style={styles.iconButton}
-        >
-          <Icon 
-            name={isFavorite(item.idDrink) ? "heart" : "heart-o"} 
-            size={30} 
-            color="#f4511e" 
-          />
-        </TouchableOpacity>
+      <View style={[styles.buttonContainer, isFavoritesScreen && styles.buttonContainerFavorites]}>
+        {!isFavoritesScreen && (
+          <TouchableOpacity 
+            onPress={() => onAddToFavorites(item)}
+            style={styles.iconButton}
+          >
+            <Icon 
+              name={isFavorite(item.idDrink) ? "heart" : "heart-o"} 
+              size={30} 
+              color="#f4511e" 
+            />
+          </TouchableOpacity>
+        )}
         <TouchableOpacity 
           onPress={() => onAddToCart(item)}
-          style={styles.addButton}
+          style={[styles.addButton, isFavoritesScreen && styles.addButtonFavorites]}
         >
           <Icon name="shopping-cart" size={20} color="#fff" style={styles.cartIcon} />
           <Text style={styles.addButtonText}>Ajouter au panier</Text>
@@ -78,6 +80,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
   },
+  buttonContainerFavorites: {
+    justifyContent: 'center',
+  },
   iconButton: {
     padding: 5,
   },
@@ -88,6 +93,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 8,
     borderRadius: 20,
+  },
+  addButtonFavorites: {
+    paddingHorizontal: 25,
   },
   cartIcon: {
     marginRight: 8,
